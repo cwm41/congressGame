@@ -13,7 +13,7 @@ function gameScreen(){
 	//how much of the level remains
 	this.countdown = 0;
 	//how long the level will be
-	this.levelTime = 10;
+	this.levelTime = 30;
 
 	//the sole purpose of this function is to load a new set of sprites
 	//exactly one time. As soon as we get to display we'll set "playing"
@@ -24,6 +24,7 @@ function gameScreen(){
 			spawnCongress(this.number);
 		}
 		this.playing = true;
+		this.inc = 1;
 	};
 	this.display = function(){
 
@@ -41,6 +42,7 @@ function gameScreen(){
 			this.levelOver = false;
 			this.countdown = 0;
 			this.time = 0;
+			this.inc = 0;
 			playerParty = null;
 		}
 	};
