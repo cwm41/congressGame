@@ -333,10 +333,11 @@ function titleScreen(){
 
 	  	startButton.onMousePressed = function(){
 	  		if(playerParty == "dem" || playerParty == "rep"){
-		    	level = 1;
-		    	for(var i = 0; i<numButtons; i++){
-	    			this.buttons[i].remove();
-	    		}
+		    		level = 1;
+		    		for(var i = 0; i<numButtons; i++){
+	    				this.buttons[i].remove();
+	    			}
+			}
 	    	}    
   	}
 
@@ -367,8 +368,8 @@ function titleScreen(){
   		//background for a gameover... 
   		// if(close){
   		// 	for(var i = 0; i<numButtons; i++){
-	   //  		this.buttons[i].remove();
-	   //  	}
+	   //  			this.buttons[i].remove();
+	  		//}
   		// }
   	}
 }
