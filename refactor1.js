@@ -334,13 +334,10 @@ function titleScreen(){
 	  	startButton.onMousePressed = function(){
 	  		if(playerParty == "dem" || playerParty == "rep"){
 		    	level = 1;
-		    	//close = true;
-	    	} 
-	    	//we're done with the buttons, so we should remove them
-	    	//but that isn't working so I'm leaving them for the moment...
-	    	//the button sprites still exist throughout the game right now, 
-	    	//but aren't causing lag yet, so yeah. 
-	  	}
+		    	for(var i = 0; i<numButtons; i++){
+	    			this.buttons[i].remove();
+	    		}
+	    	}    
   	}
 
   	this.pAlert = function(){
