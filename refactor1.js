@@ -90,7 +90,7 @@ function outcomeScreen(){
 		textAlign(CENTER);
 		if(outcome == 1){
 			textSize(50);
-			text("You win!", width/2, height/2);
+			text("You win!\nCongratulations on passing\n your first bill!", width/2, height/2);
 		} else if(outcome == 3){
 			textSize(50);
 			text("Tie... bummer...", width/2, height/2);
