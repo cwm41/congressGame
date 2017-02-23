@@ -1,13 +1,5 @@
 
 
-//to do
-//// add in a little breather before the game starts
-//// add in a reset button
-//// make level two
-//// make sprites
-
-
-
 //0 = title screen
 var l1;
 //outcomeScreen instance
@@ -30,6 +22,12 @@ var wasSwayed;
 var timer;
 var zealotry;
 var clicks;
+
+var titleCard;
+
+function preload(){
+	titleCard = loadImage("assets/titleLetters/titleCard.png");
+}
 
 function setup(){
 	createCanvas(750, 750);
@@ -58,8 +56,8 @@ DRAW
 ********************************/
 function draw(){
 
-	createCanvas(750,750);
-	background(100, 20, 200);
+	background(80, 60, 80);
+
 
 	//Title screen
 	if(level == 0){
@@ -72,6 +70,8 @@ function draw(){
 	//level one game screen
 	if(level == 1){
 		//load and display in this order to only spawnCongress ONE TIME EXACTLY
+		//... this is obviously dumb, load and display should be switched so that
+		//load() doesn't run every time...
 		l1.load();
 		if(l1.playing){
 			l1.display();
@@ -102,10 +102,12 @@ function outcomeScreen(){
 		text("Press any key to play again", width/2, height*2/3);
 		//Sends the player back to level one
 		if(reset){
+			ts.load();
 			level = 0;
 		}
 	}
 }
+
 
 function keyReleased(){
 	if(level == -1){
@@ -262,31 +264,67 @@ function spawnCongress(num){
 TITLE SCREEN OBJECT
 ***********************************/
 function titleScreen(){
-  this.buttons = new Group();
-  this.loading = false;
-  var numButtons;
-  var close = false;
-  var partyAlert = false;
+	this.buttons = new Group();
+	this.loading = false;
+	var numButtons;
+	var close = false;
+	var partyAlert = false;
 
-  	this.load = function(){
-  		repButton = createSprite(2*width/3, height/2, 125, 75);
-  		repButton.shapeColor = color(255, 0, 0);
-  		demButton = createSprite(width/3, height/2, 125, 75);
-  		demButton.shapeColor = color(0,0,255);
-  		helpButton = createSprite(width*5/6, height*5/6, 100, 60);
-  		helpButton.shapeColor = color(255);
-  		startButton = createSprite(width/2, height*2/3, 125, 75);
-  		startButton.shapeColor = color(255);
+	this.load = function(){
+		
+		repButton = createSprite(2*width/3, height/2, 125, 75);
+		repButton.shapeColor = color(200, 0, 0);
+		demButton = createSprite(width/3, height/2, 125, 75);
+		demButton.shapeColor = color(0,0,200);
+		helpButton = createSprite(width*5/6, height*5/6, 100, 60);
+		helpButton.shapeColor = color(255);
+		startButton = createSprite(width/2, height*2/3, 125, 75);
+		startButton.shapeColor = color(255);
 
-  		this.buttons.add(startButton);
+
+
+		this.buttons.add(startButton);
 		this.buttons.add(demButton);
 		this.buttons.add(repButton);
 		this.buttons.add(helpButton);
 		numButtons = this.buttons.length;
+	}
+
+  	this.pAlert = function(){
+		textAlign(CENTER);
+		fill(255);
+		textSize(12);
+		text("Please pick a party\nto begin", width*2.1/3, height*2.6/4);
+  	}
+
+  	this.display = function(){
+  		image(titleCard, 30, 80, 675, 120);
+  		textAlign(CENTER);
+  		textSize(30);
+  		text("the game", width/2, 240);
+		this.checkStatus();
+		if(close == true){
+	
+		}
+		drawSprites(this.buttons);
+		//Button text
+		textAlign(CENTER);
+		fill(0);
+		textSize(30);
+		text("START", width/2, height*2/3+10);
+		textSize(15);
+		text("Help", width*5/6, height*5/6);
+	
+		//set "reset" back to false so that on a second playthough
+		//it will still bring us back to the main screen.
+		//This also helps with only calling ts.load() to reinstantiate the
+		//buttons exactly once at line 107
+		reset = false;
   	}
 
   	//every frame we want to check if any of the buttons has been pressed
   	this.checkStatus = function(){
+
   		repButton.onMousePressed = function(){
 	    	playerParty = "rep";
 	  	}
@@ -299,20 +337,21 @@ function titleScreen(){
 	  	if(playerParty == "dem"){
 	  		partyAlert = false;
 	  		demButton.shapeColor = color(100, 100, 255);
-	  		repButton.shapeColor = color(255, 0, 0);
+	  		repButton.shapeColor = color(200, 0, 0);
 	  	} else if(playerParty == "rep"){
 	  		partyAlert = false;
-	  		demButton.shapeColor = color(0, 0,255);
+	  		demButton.shapeColor = color(0, 0,200);
 	  		repButton.shapeColor = color(255, 100, 100);
 	  	} else if(playerParty == null){
-	  		repButton.shapeColor = color(255, 0, 0);
-	  		demButton.shapeColor = color(0,0,255);
+	  		repButton.shapeColor = color(200, 0, 0);
+	  		demButton.shapeColor = color(0,0,200);
 	  	}
 
 	  	//tells player to pick party
 	  	if(partyAlert){
 	  		this.pAlert();
 	  	}
+
 
 	  	//needsHelp sends player to the help screen
 	  	helpButton.onMousePressed = function(){
@@ -333,44 +372,16 @@ function titleScreen(){
 
 	  	startButton.onMousePressed = function(){
 	  		if(playerParty == "dem" || playerParty == "rep"){
-		    		level = 1;
-		    		for(var i = 0; i<numButtons; i++){
-	    				this.buttons[i].remove();
-	    			}
+		    	level = 1;
+		    	//You should be able to do these all at once with a for loop,
+		    	//which works to remove the congress people, but for some reason
+		    	//this is WAY easier here
+		    	repButton.remove();
+		    	demButton.remove();
+		    	startButton.remove();
+		    	helpButton.remove();
 			}
-	    	}    
-  	}
-
-  	this.pAlert = function(){
-		textAlign(CENTER);
-		fill(255);
-		text("Please pick a party\nto begin", width*2.1/3, height*2.6/4);
-  	}
-
-  	this.display = function(){
-  		drawSprites(this.buttons);
-  		//Button text
-  		textAlign(CENTER);
-		fill(0);
-		textSize(30);
-		text("START", width/2, height*2/3+10);
-		textSize(15);
-		text("Help", width*5/6, height*5/6);
-
-		//set "reset" back to false so that on a second playthough
-		//it will still bring us back to the main screen
-		reset = false;
-
-  		this.checkStatus();
-
-  		//This would be good to do, because we don't need the butons anymore, 
-  		//but for the moment it's nice just to leave them waiting in the 
-  		//background for a gameover... 
-  		// if(close){
-  		// 	for(var i = 0; i<numButtons; i++){
-	   //  			this.buttons[i].remove();
-	  		//}
-  		// }
+	    }   
   	}
 }
 
@@ -384,7 +395,7 @@ function helpScreen(){
 	this.backButton.shapeColor = color(255);
 
 	this.display = function(){
-		fill(200, 30, 200);
+		fill(130, 60, 130);
 		rect(0,0,width, height);
 		textSize(30);
 		fill(0);
